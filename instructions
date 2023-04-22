@@ -1,0 +1,9 @@
+-create virt env
+python3 -m venv .venv
+.\.venv\Scripts\activate
+
+pip install django
+pip install django-framework
+
+-create django-app directory called drinks
+django-admin startproject drinks .
