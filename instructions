@@ -46,3 +46,29 @@ add a views.py to app-dir to:
 in urls.py add path('drinks/', views.drink_list) to urlpatterns
 
 navigate to http://127.0.0.1:8000/drinks/ to see the json
+
+
+in urls.py add path('drinks/<int:id>', views.drink_detail) for getting by ID
+
+-to get rid of linting
+search bar type "select" and select python venv as the interpreter
+
+
+-format your route in urls.py add
+urlpatterns = format_suffix_patterns(urlpatterns)
+allows you to view the raw json in browers at http://127.0.0.1:8000/drinks.json also add format=None in request method
+
+
+-to consume django data from front end ie with jinja2 
+create a consume.py
+run it - python consume.py
+pip install requests
+keep django api running
+
+import requests
+
+response = requests.get('http://127.0.0.1:8000/drinks')
+print(response.json())
+
+
+-reference video - https://www.youtube.com/watch?v=i5JykvxUk_A

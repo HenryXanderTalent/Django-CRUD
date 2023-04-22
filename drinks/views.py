@@ -1,17 +1,53 @@
 from django.http import JsonResponse
 from .models import Drink
 from .serializers import DrinkSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
-def drink_list(request):
+@api_view(['GET', 'POST'])
+def drink_list(request, format=None):
 
-    #get all the drinks
+    if request.method == 'GET':
 
-    drinks = Drink.objects.all()
+        #get all the drinks
+        drinks = Drink.objects.all()
 
-    #serialize them
+        #serialize them
+        serializer = DrinkSerializer(drinks, many=True)
+        
+        #return json
+        #return JsonResponse({'drinks': serializer.data}, safe=False)
+        
+        #or return in the browser admin version
+        return Response(serializer.data)
 
-    serializer = DrinkSerializer(drinks, many=True)
+    if request.method == 'POST':
+        serializer = DrinkSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def drink_detail(request, id, format=None):
+
+    try:
+        drink = Drink.objects.get(pk=id)
+    except Drink.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DrinkSerializer(drink)
+        return Response(serializer.data)
     
-    #return json
+    elif request.method == 'PUT':
+        serializer = DrinkSerializer(drink, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({'drinks': serializer.data}, safe=False)
+    elif request.method == 'DELETE':  
+        serializer = DrinkSerializer(drink)
+        drink.delete()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT) 
